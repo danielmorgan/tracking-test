@@ -20,4 +20,6 @@ Route::post('/', function (Request $request) {
     return response(null, 200);
 });
 
-Route::get('/', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
+Route::group(['middleware' => 'auth.basic'], function() {
+    Route::get('/', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
+});
