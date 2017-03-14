@@ -19,3 +19,5 @@ Route::post('/', function (Request $request) {
 
     return response(null, 200);
 });
+
+Route::get('/', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
