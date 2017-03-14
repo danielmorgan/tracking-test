@@ -14,7 +14,7 @@ class FakeTracker
         return [
             '_type' => 'location',
             'lat' => $faker->latitude,
-            'lng' => $faker->longitude,
+            'lon' => $faker->longitude,
             'tst' => Carbon::now()->timestamp,
         ];
     }

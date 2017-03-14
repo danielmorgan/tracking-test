@@ -17,7 +17,7 @@ class FakeTrackerTest extends TestCase
         $this->assertArrayHasKey('_type', $payload);
         $this->assertEquals('location', $payload['_type']);
         $this->assertArrayHasKey('lat', $payload);
-        $this->assertArrayHasKey('lng', $payload);
+        $this->assertArrayHasKey('lon', $payload);
         $this->assertArrayHasKey('tst', $payload);
     }
 }
