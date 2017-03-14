@@ -14,12 +14,13 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
-Route::post('/', function (Request $request) {
-    Log::info(json_encode($request->toArray()));
-
-    return response(null, 200);
-});
 
 Route::group(['middleware' => 'auth.basic'], function() {
     Route::get('/', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
+
+    Route::post('/api/v1/track', function (Request $request) {
+        Log::info($request->toArray());
+
+        return response()->json(['success' => true]);
+    });
 });
