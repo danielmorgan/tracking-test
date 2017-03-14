@@ -10,7 +10,3 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::group(['middleware' => 'auth.basic'], function() {
-    Route::post('/api/v1/track', 'TrackerController@track');
-});
