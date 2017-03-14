@@ -15,7 +15,7 @@ class TrackingTest extends TestCase
     use DatabaseMigrations;
 
     /** @test */
-    public function gps_coordinates_can_be_uploaded_and_saved_as_points()
+    public function tracking_data_can_be_uploaded_and_saved_as_points()
     {
         $this->disableExceptionHandling();
         $payload = (new FakeTracker)->createTestPayload();
@@ -25,5 +25,18 @@ class TrackingTest extends TestCase
 
         $response->assertStatus(201);
         $this->assertCount(1, Point::all());
+    }
+
+    /** @test */
+    public function invalid_tracking_data_is_not_saved()
+    {
+        $this->disableExceptionHandling();
+        $payload = ['foo' => 'bar'];
+        $user = factory(User::class)->create();
+
+        $response = $this->actingAs($user)->postJson('/api/v1/track', $payload);
+
+        $response->assertStatus(422);
+        $this->assertEmpty(Point::all());
     }
 }

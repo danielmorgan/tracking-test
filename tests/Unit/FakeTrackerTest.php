@@ -10,7 +10,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 class FakeTrackerTest extends TestCase
 {
     /** @test */
-    function create_test_payload()
+    function can_create_test_payload()
     {
         $payload = (new FakeTracker)->createTestPayload();
 

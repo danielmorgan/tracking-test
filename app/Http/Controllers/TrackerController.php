@@ -9,7 +9,11 @@ class TrackerController extends Controller
 {
     public function track(Request $request)
     {
-        Point::createFromTracker($request->all());
+        try {
+            Point::createFromTracker($request->all());
+        } catch (\Exception $e) {
+            return response()->json(['success' => false], 422);
+        }
 
         return response()->json(['success' => true], 201);
     }

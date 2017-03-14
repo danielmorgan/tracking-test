@@ -13,10 +13,9 @@ class PointTest extends TestCase
     use DatabaseMigrations;
 
     /** @test */
-    function create_from_tracker_payload()
+    function can_create_point_from_tracker_payload()
     {
         $dateTime = Carbon::parse('14 March 2017, 19:00:00');
-
         $point = Point::createFromTracker([
             'lat'   => 53.4825950,
             'lon'   => -2.2337500,
