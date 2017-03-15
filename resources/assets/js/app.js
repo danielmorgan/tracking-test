@@ -6,8 +6,8 @@ const points = window.points.map(p => [Number(p.lon), Number(p.lat)]);
 
 const map = new mapboxgl.Map({
     container: 'map',
-    center: points[0],
-    zoom: 14,
+    center: points[19],
+    zoom: 13,
     style: 'mapbox://styles/morgan345/cj0a1fues00b92rny9c27800q'
 });
 

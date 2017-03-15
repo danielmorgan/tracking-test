@@ -11,8 +11,10 @@
     <link href="{{ mix('css/app.css') }}" rel="stylesheet" />
 </head>
 <body>
-@yield('body')
+    @yield('body')
 
-@stack('scripts')
+    @stack('scripts')
+
+    <link href="https://fonts.googleapis.com/css?family=Marko+One|Playfair+Display:400,700" rel="stylesheet">
 </body>
 </html>
