@@ -12,6 +12,6 @@
     "cross-env": "^3.2.3",
     "laravel-mix": "^0.8.3",
     "mapbox-gl": "^0.33.1",
-    "turf": "^3.0.14"
+    "turf-bezier": "^3.0.12"
   }
 }

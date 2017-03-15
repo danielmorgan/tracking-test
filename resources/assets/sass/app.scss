@@ -21,18 +21,17 @@ h1, h2, h3, h4, h5, h6 {
 a { color: #bf2a1c; }
 
 .MapContainer {
-    width: 100%;
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 70%;
     height: 100%;
     margin: 0;
     padding: 0;
 }
 
 .Map {
-    position: fixed;
-    top: 0;
-    right: 0;
     z-index: 100;
-    width: 70%;
     height: 100%;
     margin: 0;
     padding: 0;

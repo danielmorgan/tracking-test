@@ -7,14 +7,16 @@
 
     <title>Tracking Test</title>
 
-    <link href="https://api.mapbox.com/mapbox-gl-js/v0.33.1/mapbox-gl.css" rel="stylesheet" />
     <link href="{{ mix('css/app.css') }}" rel="stylesheet" />
 </head>
 <body>
     @yield('body')
 
+    <script src='https://api.mapbox.com/mapbox-gl-js/v0.33.1/mapbox-gl.js'></script>
+
     @stack('scripts')
 
+    <link href='https://api.mapbox.com/mapbox-gl-js/v0.33.1/mapbox-gl.css' rel='stylesheet' />
     <link href="https://fonts.googleapis.com/css?family=Marko+One|Playfair+Display:400,700" rel="stylesheet">
 </body>
 </html>

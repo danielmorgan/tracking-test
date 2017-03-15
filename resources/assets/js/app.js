@@ -1,5 +1,5 @@
-import mapboxgl from 'mapbox-gl/dist/mapbox-gl';
-import turf from 'turf';
+const mapboxgl = window.mapboxgl;
+import bezier from 'turf-bezier';
 
 mapboxgl.accessToken = window.mapbox.key;
 const points = window.points.map(p => [Number(p.lon), Number(p.lat)]);
@@ -20,7 +20,7 @@ const line = {
     }
 };
 
-const curvedLine = turf.bezier(line);
+const curvedLine = bezier(line);
 
 const geoJson = {
     "id": "route",
