@@ -11,6 +11,4 @@
 |
 */
 
-Route::get('/', function() {
-    return view('mockups.map');
-});
+Route::get('/', 'MapController@mockup');
