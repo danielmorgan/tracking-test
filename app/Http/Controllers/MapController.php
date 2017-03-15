@@ -17,4 +17,13 @@ class MapController extends Controller
 
         return view('mockups.map', ['points' => $lineString->points]);
     }
+
+    public function contentMockup()
+    {
+        $lineString = new LineString(Point::all());
+
+        JavaScriptFacade::put(['points' => $lineString->points]);
+
+        return view('mockups.content', ['points' => $lineString->points]);
+    }
 }

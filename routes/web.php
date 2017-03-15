@@ -12,3 +12,4 @@
 */
 
 Route::get('/', 'MapController@mockup');
+Route::get('/content', 'MapController@contentMockup');
