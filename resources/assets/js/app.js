@@ -27,7 +27,7 @@ const geoJson = {
     "type": "line",
     "source": {
         "type": "geojson",
-        "data": curvedLine
+        "data": line
     },
     "layout": {
         "line-join": "round",

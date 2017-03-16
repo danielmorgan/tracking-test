@@ -11,7 +11,8 @@ class MapController extends Controller
 {
     public function mockup()
     {
-        $lineString = new LineString(Point::all());
+        $points = Point::all()->sortBy('recorded_at')->values();
+        $lineString = new LineString($points);
 
         JavaScriptFacade::put(['points' => $lineString->points]);
 
@@ -20,7 +21,8 @@ class MapController extends Controller
 
     public function contentMockup()
     {
-        $lineString = new LineString(Point::all());
+        $points = Point::all()->sortBy('recorded_at')->values();
+        $lineString = new LineString($points);
 
         JavaScriptFacade::put(['points' => $lineString->points]);
 
