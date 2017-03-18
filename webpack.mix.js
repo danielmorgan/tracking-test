@@ -15,3 +15,5 @@ mix.js('resources/assets/js/app.js', 'public/js')
     .sass('resources/assets/sass/app.scss', 'public/css')
     .sourceMaps()
     .browserSync({ proxy: 'localhost:8000' });
+
+mix.disableNotifications();
