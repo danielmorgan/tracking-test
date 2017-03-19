@@ -9,9 +9,13 @@ class LineString
     /** @var \Illuminate\Support\Collection */
     public $points;
 
-    public function __construct(\ArrayAccess $points = null)
+    public function __construct($points = null)
     {
-        $this->points = $points ?: new Collection;
+        $this->points = new Collection;
+
+        foreach ($points as $point) {
+            $this->addPoint($point);
+        }
     }
 
     public function addPoint(Point $point)
@@ -28,5 +32,29 @@ class LineString
         }
 
         return $this;
+    }
+
+    public function toArray()
+    {
+        return $this->points->map(function ($point) {
+            return [(float) $point->lon, (float) $point->lat];
+        })->toArray();
+    }
+
+    public function toGeojson()
+    {
+        return json_encode([
+            'type' => 'FeatureCollection',
+            'features' => [
+                [
+                    'type' => 'Feature',
+                    'properties' => [],
+                    'geometry' => [
+                        'type' => 'LineString',
+                        'coordinates' => $this->toArray()
+                    ]
+                ]
+            ]
+        ]);
     }
 }

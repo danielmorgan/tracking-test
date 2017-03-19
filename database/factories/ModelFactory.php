@@ -32,3 +32,15 @@ $factory->define(App\Point::class, function (Faker\Generator $faker) {
         'recorded_at' => Carbon\Carbon::now(),
     ];
 });
+
+$factory->define(App\LineString::class, function (Faker\Generator $faker) {
+    $points = [];
+
+    foreach (range(1, 10) as $i) {
+        $lat = $faker->latitude;
+        $lon = $faker->longitude;
+        $points[] = factory(App\Point::class)->make(['lat' => $lat, 'lon' => $lon]);
+    }
+
+    return $points;
+});

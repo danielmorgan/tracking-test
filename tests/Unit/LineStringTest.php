@@ -35,4 +35,15 @@ class LineStringTest extends TestCase
 
         $this->assertCount(2, $lineString->points);
     }
+
+    /** @test */
+    public function returning_geojson_feature_collection()
+    {
+        $lineString = factory(LineString::class)->make();
+
+        $geojson = $lineString->toGeojson();
+
+        $this->assertStringStartsWith('{', $geojson);
+        $this->assertStringEndsWith('}', $geojson);
+    }
 }

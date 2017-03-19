@@ -11,21 +11,16 @@ class MapController extends Controller
 {
     public function mockup()
     {
-        $points = Point::all()->sortBy('recorded_at')->values();
+        $points = Point::all()->sortBy('recorded_at', SORT_REGULAR, true)->values();
         $lineString = new LineString($points);
 
-        JavaScriptFacade::put(['points' => $lineString->points]);
+        JavaScriptFacade::put(['fixture' => json_decode($lineString->toGeojson())]);
 
-        return view('mockups.map', ['points' => $lineString->points]);
+        return view('mockups.map');
     }
 
     public function contentMockup()
     {
-        $points = Point::all()->sortBy('recorded_at')->values();
-        $lineString = new LineString($points);
-
-        JavaScriptFacade::put(['points' => $lineString->points]);
-
-        return view('mockups.content', ['points' => $lineString->points]);
+        return view('mockups.content');
     }
 }

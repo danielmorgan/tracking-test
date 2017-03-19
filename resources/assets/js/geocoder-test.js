@@ -4,40 +4,45 @@ const geocoderUrl = `https://api.mapbox.com/matching/v4/mapbox.driving.json?acce
 
 
 // Get route data
-const fixture = require('./fixtures/hiking-with-elevation');
+const fixture = window.fixture;
 
 
 // Remove elevation data, the geocoder API doesn't like it
 const fixtureWithoutElevation = removeElevationFromCoordinates(fixture);
+window.map.addLayer(lineLayer(fixtureWithoutElevation, '#ffff00', 6));
 
 
 // Pre-process
 const fixtureTidied = geojsonTidy.tidy(fixtureWithoutElevation, {
     minimumDistance: 10, // Minimum distance between points in metres
     minimumTime: 5,      // Minimum time interval between points in seconds
-    maximumPoints: 100   // Maximum points in a feature (100 point limit on Map Matching geocoder step)
+    maximumPoints: 2     // Maximum points in a feature (100 point limit on Map Matching geocoder step)
 });
 
 
 // Send requests to geocoder
-const geocodeRequests = [];
-for (const feature of fixtureTidied.features) {
-    geocodeRequests.push(axios.post(geocoderUrl, feature));
-}
+const geocoderRequests = fixtureTidied.features.map(f => axios.post(geocoderUrl, f));
+
+
+console.log('fixture                ', fixture);
+console.log('fixtureWithoutElevation', fixtureWithoutElevation);
+console.log('geocoderInput          ', fixtureTidied);
 
 
 // Get all geocoder responses and draw them on the map
-axios.all(geocodeRequests).then(responses => {
-    const geojson = geocoderResponsesToGeojson(responses);
-    window.map.addLayer(lineLayer(fixtureWithoutElevation, '#ffff00', 6));
-    window.map.addLayer(lineLayer(geojson, '#ff0000', 2));
+axios.all(geocoderRequests).then(responses => {
+    let i = 0;
 
-    console.log('fixture                ', fixture);
-    console.log('fixtureWithoutElevation', fixtureWithoutElevation);
-    console.log('geocoderInput          ', fixtureTidied);
-    console.log('geocoderOutput         ', geojson);
+    function draw() {
+        const geojson = geocoderResponsesToGeojson([responses[i++]]);
+        console.log('geocoderOutput         ', geojson);
+        window.map.addLayer(lineLayer(geojson, '#ff0000', 3));
+
+        setTimeout(draw, 500);
+    }
+
+    draw();
 });
-
 
 
 
@@ -64,7 +69,7 @@ function removeElevationFromCoordinates(geojson) {
     };
 }
 
-function geocoderResponsesToGeojson(responses, confidenceThreshold = 0.9) {
+function geocoderResponsesToGeojson(responses, confidenceThreshold = 0) {
     const features = [].concat(...responses.map(r => r.data.features));
     const filtered = features.filter(f => f.properties.confidence > confidenceThreshold);
     return {
