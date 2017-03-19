@@ -16,11 +16,6 @@ class MapController extends Controller
 
         JavaScriptFacade::put(['fixture' => json_decode($lineString->toGeojson())]);
 
-        return view('mockups.map');
-    }
-
-    public function contentMockup()
-    {
         return view('mockups.content');
     }
 }

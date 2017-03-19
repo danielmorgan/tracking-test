@@ -1,6 +1,7 @@
 import geojsonTidy from '@mapbox/geojson-tidy';
 import axios from 'axios';
 const geocoderUrl = `https://api.mapbox.com/matching/v4/mapbox.driving.json?access_token=${window.mapbox.key}`;
+const emptyGeojson = require('./fixtures/empty')(window.fixture.features[0].geometry.coordinates[0]);
 
 
 // Get route data
@@ -9,14 +10,14 @@ const fixture = window.fixture;
 
 // Remove elevation data, the geocoder API doesn't like it
 const fixtureWithoutElevation = removeElevationFromCoordinates(fixture);
-window.map.addLayer(lineLayer(fixtureWithoutElevation, '#ffff00', 6));
+// window.map.addLayer(lineLayer(fixtureWithoutElevation, '#ffff00', 6));
 
 
 // Pre-process
 const fixtureTidied = geojsonTidy.tidy(fixtureWithoutElevation, {
     minimumDistance: 10, // Minimum distance between points in metres
     minimumTime: 5,      // Minimum time interval between points in seconds
-    maximumPoints: 2     // Maximum points in a feature (100 point limit on Map Matching geocoder step)
+    maximumPoints: 100   // Maximum points in a feature (100 point limit on Map Matching geocoder step)
 });
 
 
@@ -31,18 +32,30 @@ console.log('geocoderInput          ', fixtureTidied);
 
 // Get all geocoder responses and draw them on the map
 axios.all(geocoderRequests).then(responses => {
-    let i = 0;
+    const geojson = geocoderResponsesToGeojson(responses);
+    console.log('geocoderOutput         ', geojson);
+    window.map.addSource('line-animation', { type: 'geojson', data: emptyGeojson });
+    setupLineAnimationLayers();
 
-    function draw() {
-        const geojson = geocoderResponsesToGeojson([responses[i++]]);
-        console.log('geocoderOutput         ', geojson);
-        window.map.addLayer(lineLayer(geojson, '#ff0000', 3));
+    document.addEventListener('scroll', scroll);
+    let animatedGeojson = emptyGeojson;
+    function scroll() {
+        const y = window.pageYOffset;
+        const vh = document.documentElement.clientHeight;
+        const dh = Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
+        const n = y / (dh - vh); // Normalized scroll position from 0 - 1
 
-        setTimeout(draw, 500);
+        const maxIndex = Math.floor(geojson.features[0].geometry.coordinates.length * n);
+        animatedGeojson.features[0].geometry.coordinates = geojson.features[0].geometry.coordinates.slice(0, maxIndex);
+        window.map.getSource('line-animation').setData(animatedGeojson);
+        window.map.panTo(animatedGeojson.features[0].geometry.coordinates[animatedGeojson.features[0].geometry.coordinates.length - 1]);
     }
-
-    draw();
 });
+
+
+
+
+
 
 
 
@@ -78,9 +91,9 @@ function geocoderResponsesToGeojson(responses, confidenceThreshold = 0) {
     };
 }
 
-function lineLayer(geojson, color = '#ffff00', width = 3) {
+function lineLayer(geojson, color = '#ffff00', width = 3, id = null) {
     return {
-        'id': String((new Date).getTime()),
+        'id': id ? id : String((new Date).getTime()),
         'type': 'line',
         'layout': {
             'line-join': 'round',
@@ -96,4 +109,49 @@ function lineLayer(geojson, color = '#ffff00', width = 3) {
             'data': geojson
         }
     };
+}
+
+function setupLineAnimationLayers() {
+    window.map.addLayer({
+        'id': 'line-animation-bg',
+        'type': 'line',
+        'source': 'line-animation',
+        'layout': {
+            'line-cap': 'round',
+            'line-join': 'round'
+        },
+        'paint': {
+            'line-color': '#510bff',
+            'line-width': 9,
+            'line-opacity': 0.1
+        }
+    });
+    window.map.addLayer({
+        'id': 'line-animation',
+        'type': 'line',
+        'source': 'line-animation',
+        'layout': {
+            'line-cap': 'round',
+            'line-join': 'round'
+        },
+        'paint': {
+            'line-color': '#008eff',
+            'line-width': 4,
+            'line-opacity': 0.5
+        }
+    });
+    window.map.addLayer({
+        'id': 'line-animation-fg',
+        'type': 'line',
+        'source': 'line-animation',
+        'layout': {
+            'line-cap': 'round',
+            'line-join': 'round'
+        },
+        'paint': {
+            'line-color': '#aceeff',
+            'line-width': 0.5,
+            'line-opacity': 0.7
+        }
+    });
 }
