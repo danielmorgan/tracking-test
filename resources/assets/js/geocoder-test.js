@@ -1,16 +1,19 @@
 import geojsonTidy from '@mapbox/geojson-tidy';
 import axios from 'axios';
 const geocoderUrl = `https://api.mapbox.com/matching/v4/mapbox.driving.json?access_token=${window.mapbox.key}`;
-const emptyGeojson = require('./fixtures/empty')(window.fixture.features[0].geometry.coordinates[0]);
 
 
 // Get route data
 const fixture = window.fixture;
+// const fixture = require('./fixtures/walk-around-the-block');
 
 
 // Remove elevation data, the geocoder API doesn't like it
 const fixtureWithoutElevation = removeElevationFromCoordinates(fixture);
+const start = fixtureWithoutElevation.features[0].geometry.coordinates[0];
+window.map.panTo(start);
 // window.map.addLayer(lineLayer(fixtureWithoutElevation, '#ffff00', 6));
+const emptyGeojson = require('./fixtures/empty')(start);
 
 
 // Pre-process
@@ -34,11 +37,12 @@ console.log('geocoderInput          ', fixtureTidied);
 axios.all(geocoderRequests).then(responses => {
     const geojson = geocoderResponsesToGeojson(responses);
     console.log('geocoderOutput         ', geojson);
-    window.map.addSource('line-animation', { type: 'geojson', data: emptyGeojson });
+
+    let animatedGeojson = emptyGeojson;
+    window.map.addSource('line-animation', { type: 'geojson', data: animatedGeojson });
     setupLineAnimationLayers();
 
     document.addEventListener('scroll', scroll);
-    let animatedGeojson = emptyGeojson;
     function scroll() {
         const y = window.pageYOffset;
         const vh = document.documentElement.clientHeight;
@@ -84,7 +88,12 @@ function removeElevationFromCoordinates(geojson) {
 
 function geocoderResponsesToGeojson(responses, confidenceThreshold = 0) {
     const features = [].concat(...responses.map(r => r.data.features));
-    const filtered = features.filter(f => f.properties.confidence > confidenceThreshold);
+    const filtered = features.filter(f => f.properties.confidence >= confidenceThreshold);
+
+    if (filtered.length < 1) {
+        alert('Geocoder returned no geometry (with a confidence threshold of ' + confidenceThreshold + ')');
+    }
+
     return {
         'type': 'FeatureCollection',
         'features': filtered
